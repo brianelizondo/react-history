@@ -13,6 +13,7 @@ class JokeListClass extends React.Component{
         this.state = { jokes: [] };
         this.generateNewJokes = this.generateNewJokes.bind(this);
         this.vote = this.vote.bind(this);
+        this.resetVotes = this.resetVotes.bind(this);
     }
 
     /* empty joke list and then call getJokes */
@@ -30,6 +31,14 @@ class JokeListClass extends React.Component{
         let localJokes = JSON.parse(window.localStorage.getItem("jokes"));
         let newLocalJokes = localJokes.map(joke => (joke.id === id ? { ...joke, votes: joke.votes + delta } : joke ));
         window.localStorage.setItem("jokes", JSON.stringify(newLocalJokes));
+    }
+
+    /* reset the vote counts */
+    resetVotes() {
+        this.setState(allJokes => ({
+            jokes: allJokes.jokes.map(j => ({ ...j, votes: 0 }))
+        }));
+        window.localStorage.clear();
     }
 
     /* get jokes from api */
@@ -78,6 +87,7 @@ class JokeListClass extends React.Component{
         return (
             <div className="JokeList">
                 <button className="JokeList-getmore" onClick={this.generateNewJokes}>Get New Jokes</button>
+                <button className="JokeList-reset" onClick={this.resetVotes}>Reset Votes</button>
 
                 { this.state.jokes.length < this.props.numJokesToGet ? (
                     <div className="JokeList-loading"><img src={ loadingImage } alt="" /></div>
