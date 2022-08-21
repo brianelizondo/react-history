@@ -14,12 +14,16 @@ class JokeListClass extends React.Component{
         this.generateNewJokes = this.generateNewJokes.bind(this);
         this.vote = this.vote.bind(this);
         this.resetVotes = this.resetVotes.bind(this);
+        this.lockJoke = this.lockJoke.bind(this);
     }
 
     /* empty joke list and then call getJokes */
     generateNewJokes(){
-        this.setState({ jokes: [] });
-        window.localStorage.clear();
+        let localJokes = JSON.parse(window.localStorage.getItem("jokes"));
+        let localJokesLocked = localJokes.filter(joke => (joke.locked === true));
+        
+        this.setState({ jokes: localJokesLocked });
+        window.localStorage.setItem("jokes", JSON.stringify(localJokesLocked));
     }
 
     /* change vote for this id by delta (+1 or -1) */
@@ -41,6 +45,17 @@ class JokeListClass extends React.Component{
         window.localStorage.clear();
     }
 
+    /* "lock" a joke with a lock button */
+    lockJoke(id) {
+        this.setState(allJokes => ({
+            jokes: allJokes.jokes.map(j => (j.id === id ? { ...j, locked: !j.locked } : j))
+        }));
+
+        let localJokes = JSON.parse(window.localStorage.getItem("jokes"));
+        let newLocalJokes = localJokes.map(joke => (joke.id === id ? { ...joke, locked: !joke.locked } : joke ));
+        window.localStorage.setItem("jokes", JSON.stringify(newLocalJokes));
+    }
+
     /* get jokes from api */
     async getJokes(){
         let j;
@@ -49,7 +64,7 @@ class JokeListClass extends React.Component{
         }else{
             j = [...this.state.jokes];
         }
-        let seenJokes = new Set();
+        let seenJokes = new Set(j.map(joke => joke.id));
 
         try {
             while (j.length < this.props.numJokesToGet) {
@@ -60,7 +75,7 @@ class JokeListClass extends React.Component{
         
                 if (!seenJokes.has(jokeObj.id)) {
                     seenJokes.add(jokeObj.id);
-                    j.push({ ...jokeObj, votes: 0 });
+                    j.push({ ...jokeObj, votes: 0, locked: false });
                 } else {
                     console.error("duplicate found!");
                 }
@@ -94,7 +109,7 @@ class JokeListClass extends React.Component{
                 ) : null }
         
                 {sortedJokes.map(j => (
-                    <JokeClass text={j.joke} key={j.id} id={j.id} votes={j.votes} vote={this.vote} />
+                    <JokeClass text={j.joke} key={j.id} id={j.id} votes={j.votes} lock={j.locked} vote={this.vote} locked={this.lockJoke} />
                 ))}
             </div>
         );

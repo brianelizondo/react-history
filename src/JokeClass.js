@@ -6,6 +6,7 @@ class JokeClass extends Component{
         super(props);
         this.upVote = this.upVote.bind(this);
         this.downVote = this.downVote.bind(this);
+        this.lockJoke = this.lockJoke.bind(this);
     }
 
     upVote(){
@@ -14,6 +15,10 @@ class JokeClass extends Component{
     
     downVote(){
         this.props.vote(this.props.id, -1);
+    }
+
+    lockJoke(){
+        this.props.locked(this.props.id);
     }
     
     render(){
@@ -26,6 +31,10 @@ class JokeClass extends Component{
         
                 <button onClick={this.downVote}>
                   <i className="fas fa-thumbs-down" />
+                </button>
+
+                <button onClick={this.lockJoke}>
+                  <i className={ this.props.lock ? "fas fa-lock" : "fas fa-lock-open" } />
                 </button>
         
                 {this.props.votes}

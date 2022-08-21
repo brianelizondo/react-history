@@ -6,6 +6,10 @@
   color: tomato;
 }
 
+.JokeList{
+  margin-left: 30px;
+}
+
 .JokeList-getmore {
   margin: 1em 0;
   font-size: 150%;
@@ -28,6 +32,7 @@
   text-align: center;
   padding-top: 50px;
 }
+
 .JokeList-loading img{
   max-width: 50px;
 }
