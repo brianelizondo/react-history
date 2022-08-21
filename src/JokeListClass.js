@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import JokeClass from "./JokeClass";
+import loadingImage from "./loading.gif"
 import "./JokeList.css";
 
 class JokeListClass extends React.Component{
@@ -65,6 +66,10 @@ class JokeListClass extends React.Component{
         return (
             <div className="JokeList">
                 <button className="JokeList-getmore" onClick={this.generateNewJokes}>Get New Jokes</button>
+
+                { this.state.jokes.length < this.props.numJokesToGet ? (
+                    <div className="JokeList-loading"><img src={ loadingImage } alt="" /></div>
+                ) : null }
         
                 {sortedJokes.map(j => (
                     <JokeClass text={j.joke} key={j.id} id={j.id} votes={j.votes} vote={this.vote} />

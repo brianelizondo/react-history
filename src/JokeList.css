@@ -13,3 +13,13 @@
   background-color: tomato;
   color: white;
 }
+
+.JokeList-loading{
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  padding-top: 50px;
+}
+.JokeList-loading img{
+  max-width: 50px;
+}
