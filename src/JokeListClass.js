@@ -18,6 +18,7 @@ class JokeListClass extends React.Component{
     /* empty joke list and then call getJokes */
     generateNewJokes(){
         this.setState({ jokes: [] });
+        window.localStorage.clear();
     }
 
     /* change vote for this id by delta (+1 or -1) */
@@ -25,12 +26,22 @@ class JokeListClass extends React.Component{
         this.setState(allJokes => ({
             jokes: allJokes.jokes.map(j => (j.id === id ? { ...j, votes: j.votes + delta } : j))
         }));
+
+        let localJokes = JSON.parse(window.localStorage.getItem("jokes"));
+        let newLocalJokes = localJokes.map(joke => (joke.id === id ? { ...joke, votes: joke.votes + delta } : joke ));
+        window.localStorage.setItem("jokes", JSON.stringify(newLocalJokes));
     }
 
     /* get jokes from api */
     async getJokes(){
-        let j = [...this.state.jokes];
+        let j;
+        if(window.localStorage.getItem("jokes")){
+            j = JSON.parse(window.localStorage.getItem("jokes"));
+        }else{
+            j = [...this.state.jokes];
+        }
         let seenJokes = new Set();
+
         try {
             while (j.length < this.props.numJokesToGet) {
                 let res = await axios.get("https://icanhazdadjoke.com", {
@@ -46,6 +57,7 @@ class JokeListClass extends React.Component{
                 }
             }
             this.setState({ jokes: j });
+            window.localStorage.setItem("jokes", JSON.stringify(j));
         } catch (e) {
             console.log(e);
         }
